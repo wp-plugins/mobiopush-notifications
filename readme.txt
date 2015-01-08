@@ -11,12 +11,11 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 
 
-Re-Engage your website visitors with the help of push notifications .
-
+Mobiopush Notifications
 
 == Description == 
 
-Our website : https://mobiopush.com ! 
+https://mobiopush.com ! Re-engage your website users with the help of push notifications and web notifications .
 
 
 == Installation ==
