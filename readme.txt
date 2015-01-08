@@ -1,4 +1,4 @@
-=== MobioPush push notifications plugin for wordpress ===
+=== MobioPush Desktop Notifications ===
 
 
 Contributors: (this should be a list of wordpress.org userid's)
@@ -11,7 +11,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 
 
-Mobiopush Notifications
+Re-engage your website users with the help of push notifications and web notifications .
 
 == Description == 
 
