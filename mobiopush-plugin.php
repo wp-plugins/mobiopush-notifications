@@ -409,14 +409,16 @@ function add_checkbox() {
     ?>
     
     
-    
+    <!-- start of mobio code -->
+<script type="text/javascript">
+	var mpush_site_key='<?php echo esc_attr( get_option('mobio_site_key') ); ?>'; 
+	var mpush_alias='default'; //optional
+	var mpush_segments='default'; //optional
+</script>
+<script src="http://cdn.mobiopush.com/mobio.js" type="text/javascript"></script>
+<!-- end of mobio code --> 
     
   
-    <!-- start of mobio code --> 
-
-	<script src="//cdn.mobiopush.com/mobio.js?mobio_sitekey=<?php echo esc_attr( get_option('mobio_site_key') ); ?>" type="text/javascript" id="_mobio_js"></script>
-	
-	<!-- end of mobio code -->
     
     <?php
     
