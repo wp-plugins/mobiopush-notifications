@@ -111,7 +111,7 @@ function baw_settings_page() {
         <tr valign="top">
         <th scope="row">Default Notification Title</th>
         <td><input type="text" name="mobio_default_title" value="<?php echo esc_attr( get_option('mobio_default_title') ); ?>"  class="regular-text"/>
-        <br><p class="description" > If you eave blank , 'new blog post' will be used as title</span><br>
+        <br><p class="description" > If you eave blank , blog name will be used as title</span><br>
         </td>
         </tr>
          <tr valign="top">
@@ -311,7 +311,7 @@ function mpush_post_saved( $postId ) {
 
 $mobio_title=esc_attr( get_option('mobio_default_title') );
 if(empty($mobio_title))
-$mobio_title="New Blog Post !";
+$mobio_title=get_bloginfo('name');
 $mobio_web_time_api=esc_attr( get_option('mobio_web_time') );
 if(empty($mobio_web_time_api))
 $mobio_web_time_api=1400;
