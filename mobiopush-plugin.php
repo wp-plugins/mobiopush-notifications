@@ -63,7 +63,7 @@ function register_mysettings() {
 	register_setting( 'mobio-settings-group', 'mobio_enable_web' );
 	register_setting( 'mobio-settings-group', 'mobio_enable_auto' );	
 	register_setting( 'mobio-settings-group', 'mobio_web_time' );	
-	register_setting( 'mobio-settings-group', 'mobio_default_title' );	
+	//register_setting( 'mobio-settings-group', 'mobio_default_title' );	
 
         
         
@@ -108,12 +108,7 @@ function baw_settings_page() {
         
         </tr>
         
-        <tr valign="top">
-        <th scope="row">Default Notification Title</th>
-        <td><input type="text" name="mobio_default_title" value="<?php echo esc_attr( get_option('mobio_default_title') ); ?>"  class="regular-text"/>
-        <br><p class="description" > Leave blank if you want to use post title as notification title</span><br>
-        </td>
-        </tr>
+        
          <tr valign="top">
         <th scope="row">Push Notifications</th>
         <td> 
@@ -320,6 +315,13 @@ else {
 $mobio_web_time_api=esc_attr( get_option('mobio_web_time') );
 
 }
+
+$post12 = get_post($postId); 
+$mobio_t = $post12->post_content;
+
+
+
+
 $mobio_body=get_the_title( $postId );
 $mobio_url_api=wp_get_shortlink( $post_id );
 $mobio_web_not_api=0;
@@ -371,8 +373,8 @@ curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, 
 http_build_query(array(			'SITE_KEY' => esc_attr( get_option('mobio_site_key')),
         						'API_KEY' =>esc_attr( get_option('mobio_api_key')),
-        						'TITLE' => substr($mobio_title,0,70),
-        						'MESSAGE' => substr($mobio_body,0,120), 
+        						'TITLE' => substr($mobio_body,0,70),
+        						'MESSAGE' => substr($mobio_t,0,140), 
 								'WEB_NOTIFICATION'					=> $mobio_web_not_api,
 								'WEB_NOTIFICATION_TIME'				=> $mobio_web_time_api,
 								'PUSH_NOTIFICATION'					=> $mobio_push_not_api,
