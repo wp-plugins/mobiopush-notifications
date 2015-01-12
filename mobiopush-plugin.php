@@ -314,7 +314,7 @@ if(empty($mobio_title))
 $mobio_title="New Blog Post !";
 $mobio_web_time_api=esc_attr( get_option('mobio_web_time') );
 if(empty($mobio_web_time_api))
-$mobio_web_time_api=10;
+$mobio_web_time_api=1400;
 else {
 
 $mobio_web_time_api=esc_attr( get_option('mobio_web_time') );
