@@ -111,7 +111,7 @@ function baw_settings_page() {
         <tr valign="top">
         <th scope="row">Default Notification Title</th>
         <td><input type="text" name="mobio_default_title" value="<?php echo esc_attr( get_option('mobio_default_title') ); ?>"  class="regular-text"/>
-        <br><p class="description" > If you eave blank , blog name will be used as title</span><br>
+        <br><p class="description" > If you leave blank , blog name will be used as title</span><br>
         </td>
         </tr>
          <tr valign="top">
