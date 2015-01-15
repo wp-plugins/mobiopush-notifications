@@ -4,7 +4,7 @@
     Plugin URI: https://mobiopush.com
     Description: Plugin to improve user engagement by using push notifications.Mobiopush provides Web Notification & Push Notification services in one package allowing you to reach out to your Active and Passives users respectively. These Notifications are the new way to identify and re-enage your users.
     Author: MobioPush
-    Version: 1.0
+    Version: 1.1.4
     Author URI: https://mobiopush.com
     */
     
@@ -25,7 +25,7 @@
  
  $shortname = "mobio";
 				
-				
+
 
 function add_action_links ( $links ) {
         $rlink = array(
@@ -111,7 +111,7 @@ function baw_settings_page() {
         <tr valign="top">
         <th scope="row">Default Notification Title</th>
         <td><input type="text" name="mobio_default_title" value="<?php echo esc_attr( get_option('mobio_default_title') ); ?>"  class="regular-text"/>
-        <br><p class="description" > Leave blank if you want to use post title as notification title</span><br>
+        <br><p class="description" > If you leave blank , blog name will be used as title</span><br>
         </td>
         </tr>
          <tr valign="top">
@@ -311,10 +311,10 @@ function mpush_post_saved( $postId ) {
 
 $mobio_title=esc_attr( get_option('mobio_default_title') );
 if(empty($mobio_title))
-$mobio_title="New Blog Post !";
+$mobio_title=get_bloginfo('name');
 $mobio_web_time_api=esc_attr( get_option('mobio_web_time') );
 if(empty($mobio_web_time_api))
-$mobio_web_time_api=10;
+$mobio_web_time_api=1400;
 else {
 
 $mobio_web_time_api=esc_attr( get_option('mobio_web_time') );
@@ -344,6 +344,17 @@ if ( ! current_user_can( 'edit_post', $postId ) )
         return;
 // Return if it's a post revision
 if ( false !== wp_is_post_revision( $postId ) )
+        return;
+        
+        if($GET['preview'])
+        return;
+        
+        if ( 'trash' == get_post_status( $postId ))
+        return;
+        
+        if ( 'draft' == get_post_status( $postId ))
+        return;
+        if ( 'publish' != get_post_status( $postId ))
         return;
 
         if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || empty( $_POST['mobio_active_checkbox'] ) ) {
@@ -407,16 +418,12 @@ function add_checkbox() {
     function mp_footer() {
     
     ?>
+<!-- start of mobio code -->
+<script src="//cdn.mobiopush.com/mobiojs/<?php echo esc_attr( get_option('mobio_site_key') ); ?>" type="text/javascript" id="_mobio_js"></script>
+<!-- end of mobio code -->    
     
-    
-    
-    
-  
-    <!-- start of mobio code --> 
 
-	<script src="//cdn.mobiopush.com/mobio.js?mobio_sitekey=<?php echo esc_attr( get_option('mobio_site_key') ); ?>" type="text/javascript" id="_mobio_js"></script>
-	
-	<!-- end of mobio code -->
+  
     
     <?php
     
