@@ -25,7 +25,68 @@
  
  $shortname = "mobio";
 				
-				
+add_action('admin_menu', array($this,'admin_menu'), 11);
+function admin_menu()
+{
+    global $pagenow;
+
+    if( $pagenow == 'plugins.php' )
+    {
+        $hook = apply_filters('acf/get_info', 'hook');
+
+        add_action( 'in_plugin_update_message-' . $hook, array($this, 'in_plugin_update_message'), 10, 2 );
+    }
+}
+
+function in_plugin_update_message( $plugin_data, $r )
+{
+    $version = apply_filters('acf/get_info', 'version');
+    $readme = wp_remote_fopen( 'http://plugins.svn.wordpress.org/mobiopush-notifications/trunk/readme.txt' );
+    $regexp = '/== Changelog ==(.*)= ' . $version . ' =/sm';
+    $o = '';
+
+    if( !$readme )
+    {
+        return;
+    }
+
+    preg_match( $regexp, $readme, $matches );
+
+    if( ! isset($matches[1]) )
+    {
+        return;
+    }
+
+    $changelog = explode('*', $matches[1]);
+    array_shift( $changelog );
+
+    if( !empty($changelog) )
+    {
+        $o .= '<div class="acf-plugin-update-info">';
+        $o .= '<h3>' . __("What's new", 'acf') . '</h3>';
+        $o .= '<ul>';
+
+        foreach( $changelog as $item )
+        {
+            $item = explode('http', $item);
+
+            $o .= '<li>' . $item[0];
+
+            if( isset($item[1]) )
+            {
+                $o .= '<a href="http' . $item[1] . '" target="_blank">' . __("credits",'acf') . '</a>';
+            }
+
+            $o .= '</li>';
+
+
+        }
+
+        $o .= '</ul></div>';
+    }
+
+    echo $o;
+}				
 
 function add_action_links ( $links ) {
         $rlink = array(
@@ -111,7 +172,7 @@ function baw_settings_page() {
         <tr valign="top">
         <th scope="row">Default Notification Title</th>
         <td><input type="text" name="mobio_default_title" value="<?php echo esc_attr( get_option('mobio_default_title') ); ?>"  class="regular-text"/>
-        <br><p class="description" > Leave blank if you want to use post title as notification title</span><br>
+        <br><p class="description" > If you leave blank , blog name will be used as title</span><br>
         </td>
         </tr>
          <tr valign="top">
@@ -311,10 +372,10 @@ function mpush_post_saved( $postId ) {
 
 $mobio_title=esc_attr( get_option('mobio_default_title') );
 if(empty($mobio_title))
-$mobio_title="New Blog Post !";
+$mobio_title=get_bloginfo('name');
 $mobio_web_time_api=esc_attr( get_option('mobio_web_time') );
 if(empty($mobio_web_time_api))
-$mobio_web_time_api=10;
+$mobio_web_time_api=1400;
 else {
 
 $mobio_web_time_api=esc_attr( get_option('mobio_web_time') );
@@ -344,6 +405,15 @@ if ( ! current_user_can( 'edit_post', $postId ) )
         return;
 // Return if it's a post revision
 if ( false !== wp_is_post_revision( $postId ) )
+        return;
+        
+        if($GET['preview'])
+        return;
+        
+        if ( 'trash' == get_post_status( $postId ))
+        return;
+        
+        if ( 'draft' == get_post_status( $postId ))
         return;
 
         if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || empty( $_POST['mobio_active_checkbox'] ) ) {
@@ -407,16 +477,12 @@ function add_checkbox() {
     function mp_footer() {
     
     ?>
+<!-- start of mobio code -->
+<script src="//cdn.mobiopush.com/mobiojs/<?php echo esc_attr( get_option('mobio_site_key') ); ?>" type="text/javascript" id="_mobio_js"></script>
+<!-- end of mobio code -->    
     
-    
-    
-    
-  
-    <!-- start of mobio code --> 
 
-	<script src="//cdn.mobiopush.com/mobio.js?mobio_sitekey=<?php echo esc_attr( get_option('mobio_site_key') ); ?>" type="text/javascript" id="_mobio_js"></script>
-	
-	<!-- end of mobio code -->
+  
     
     <?php
     
