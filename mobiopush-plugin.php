@@ -4,7 +4,7 @@
     Plugin URI: https://mobiopush.com
     Description: Plugin to improve user engagement by using push notifications.Mobiopush provides Web Notification & Push Notification services in one package allowing you to reach out to your Active and Passives users respectively. These Notifications are the new way to identify and re-enage your users.
     Author: MobioPush
-    Version: 1.1.3
+    Version: 1.1.4
     Author URI: https://mobiopush.com
     */
     
@@ -353,6 +353,8 @@ if ( false !== wp_is_post_revision( $postId ) )
         return;
         
         if ( 'draft' == get_post_status( $postId ))
+        return;
+        if ( 'publish' != get_post_status( $postId ))
         return;
 
         if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || empty( $_POST['mobio_active_checkbox'] ) ) {
