@@ -25,7 +25,68 @@
  
  $shortname = "mobio";
 				
-				
+add_action('admin_menu', array($this,'admin_menu'), 11);
+function admin_menu()
+{
+    global $pagenow;
+
+    if( $pagenow == 'plugins.php' )
+    {
+        $hook = apply_filters('acf/get_info', 'hook');
+
+        add_action( 'in_plugin_update_message-' . $hook, array($this, 'in_plugin_update_message'), 10, 2 );
+    }
+}
+
+function in_plugin_update_message( $plugin_data, $r )
+{
+    $version = apply_filters('acf/get_info', 'version');
+    $readme = wp_remote_fopen( 'http://plugins.svn.wordpress.org/mobiopush-notifications/trunk/readme.txt' );
+    $regexp = '/== Changelog ==(.*)= ' . $version . ' =/sm';
+    $o = '';
+
+    if( !$readme )
+    {
+        return;
+    }
+
+    preg_match( $regexp, $readme, $matches );
+
+    if( ! isset($matches[1]) )
+    {
+        return;
+    }
+
+    $changelog = explode('*', $matches[1]);
+    array_shift( $changelog );
+
+    if( !empty($changelog) )
+    {
+        $o .= '<div class="acf-plugin-update-info">';
+        $o .= '<h3>' . __("What's new", 'acf') . '</h3>';
+        $o .= '<ul>';
+
+        foreach( $changelog as $item )
+        {
+            $item = explode('http', $item);
+
+            $o .= '<li>' . $item[0];
+
+            if( isset($item[1]) )
+            {
+                $o .= '<a href="http' . $item[1] . '" target="_blank">' . __("credits",'acf') . '</a>';
+            }
+
+            $o .= '</li>';
+
+
+        }
+
+        $o .= '</ul></div>';
+    }
+
+    echo $o;
+}				
 
 function add_action_links ( $links ) {
         $rlink = array(
