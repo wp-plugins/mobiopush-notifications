@@ -345,6 +345,15 @@ if ( ! current_user_can( 'edit_post', $postId ) )
 // Return if it's a post revision
 if ( false !== wp_is_post_revision( $postId ) )
         return;
+        
+        if($GET['preview'])
+        return;
+        
+        if ( 'trash' == get_post_status( $postId ))
+        return;
+        
+        if ( 'draft' == get_post_status( $postId ))
+        return;
 
         if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || empty( $_POST['mobio_active_checkbox'] ) ) {
             return false;
