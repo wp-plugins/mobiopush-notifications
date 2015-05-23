@@ -5,8 +5,8 @@ Contributors: (this should be a list of wordpress.org userid's)
 Tags: mobiopush , push notifications , safari push notifications , web notifications , chrome notifications , firefox notifications
 Requires at least: 3.8
 Tested up to: 4.2
-Version: 1.1.6
-Stable tag: 1.1.6
+Version: 1.2.1
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,10 +69,15 @@ a) Safari push notifications : Send notifications to users who are not browsing 
 b) Web notifications : Send notifications to your live users ( Firefox , Safari , Chrome and Opera are supported )
 
 
+
 == Changelog ==
+
+= 1.2.1 =
+ *Bug fixes
 
 = 1.1.6 =
  *Bug fixes
+
 
 = 1.0 =
 *Initial version
