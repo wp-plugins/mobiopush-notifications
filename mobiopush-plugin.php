@@ -4,7 +4,7 @@
     Plugin URI: https://mobiopush.com
     Description: Plugin to improve user engagement by using push notifications.Mobiopush provides Web Notification & Push Notification services in one package allowing you to reach out to your Active and Passives users respectively. These Notifications are the new way to identify and re-enage your users.
     Author: MobioPush
-    Version: 1.2.4
+    Version: 1.3
     Author URI: https://mobiopush.com
     */
     
@@ -18,6 +18,8 @@
  add_action( 'post_submitbox_misc_actions', 'add_checkbox');
  add_action( 'save_post', 'mpush_post_saved');
  add_action( 'add_meta_boxes_post', 'mobio_custom_box'  );
+  add_action( 'add_meta_boxes_page', 'mobio_custom_box_page'  );
+ 
  add_action( 'admin_menu', 'mp_menu');
  add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), 'add_action_links' );
  add_action( 'admin_post_save_services_options', array($this, 'on_save_changes'));
@@ -277,6 +279,18 @@ function mobio_custom_box( $post ) {
             'high'
         );
     }
+    
+function mobio_custom_box_page( $post ) {
+
+        add_meta_box(
+            '_mobio',
+            'MobioPush advanced setttings (Optional)',
+            'mobio_custom_box_content' ,
+            'page',
+            'normal',
+            'high'
+        );
+    }    
 
 function mobio_custom_box_content( $post ) {
         ?>
@@ -308,6 +322,8 @@ Web Notification time period : <select name="mobio_web_time" aria-invalid="false
 
     
 function mpush_post_saved( $postId ) {
+
+
 
 $mobio_title=esc_attr( get_option('mobio_default_title') );
 if(empty($mobio_title))
@@ -354,6 +370,8 @@ if ( false !== wp_is_post_revision( $postId ) )
         
         if ( 'draft' == get_post_status( $postId ))
         return;
+        if ( 'auto-draft' == get_post_status( $postId ))
+        return;
         if ( 'publish' != get_post_status( $postId ))
         return;
 
@@ -391,7 +409,6 @@ http_build_query(array(			'SITE_KEY' => esc_attr( get_option('mobio_site_key')),
         						)));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $server_output = curl_exec ($ch);
-//echo $server_output;
             } 
             
         }
