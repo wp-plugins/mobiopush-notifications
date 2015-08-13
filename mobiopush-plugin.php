@@ -4,7 +4,7 @@
     Plugin URI: https://mobiopush.com
     Description: Plugin to improve user engagement by using push notifications.Mobiopush provides Web Notification & Push Notification services in one package allowing you to reach out to your Active and Passives users respectively. These Notifications are the new way to identify and re-enage your users.
     Author: MobioPush
-    Version: 1.3
+    Version: 1.4
     Author URI: https://mobiopush.com
     */
     
@@ -293,9 +293,33 @@ function mobio_custom_box_page( $post ) {
     }    
 
 function mobio_custom_box_content( $post ) {
+
+$ch = curl_init("http://api.mobiopush.com/v1/checkStatus.php?SITE_KEY=".esc_attr( get_option('mobio_site_key')));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $location_string); 
+
+
+$content = curl_exec($ch);
+
+curl_close($ch);
+
+if($content==0) { 
+
         ?>
 
         <div id="mobio-box">
+        
+                <span id="mobio_desc" > Your notifications will not be sent as your mobiopush trial has been expired , please purchase a plan to continue</span>
+<br>
+        <a href="http://dashboard.mobiopush.com/profile/billing"> <input type="button" class="button button-primary button-large" value="purchase plan to re-activate mobiopush" style="font-size: 1.2em;height: 1.7em;width: 60%;margin:50px; background: #A80000 ;"></a> <br>
+  </div>
+  
+  
+  <?php } else { ?>    
+  
+  <div id="mobio-box">   
             <input type="text" id="mobio_title" placeholder="Enter notification title" name="mobio_title" value="" style="font-size: 1.2em;height: 1.7em;width: 100%;background-color: #fff;"/>
             
             <span id="mobio_desc" > Leave blank if title of post can be used as title of notification</span>
@@ -318,6 +342,7 @@ Web Notification time period : <select name="mobio_web_time" aria-invalid="false
         </div>
     <?php
     }
+}
  
 
     
@@ -416,7 +441,18 @@ $server_output = curl_exec ($ch);
     
  
 function add_checkbox() { 
+$ch = curl_init("http://api.mobiopush.com/v1/checkStatus.php?SITE_KEY=".esc_attr( get_option('mobio_site_key')));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $location_string); 
 
+
+$content = curl_exec($ch);
+
+curl_close($ch);
+
+if($content==1) { 
             printf('<div class="misc-pub-section misc-pub-section-last" id="mobio_check_box">');
             
             
@@ -429,8 +465,10 @@ function add_checkbox() {
                     printf('<br><label><input type="checkbox" value="0" id="mobio_check_box" name="mobio_check_box" style="margin: -3px 9px 0 1px;"/>Send Mobiopush Notification</label><input type=hidden value="1" name="mobio_active_checkbox">' );
 
                
-               printf('</div>');
-    }
+                printf('</div>');
+
+	}
+}
     
     function mp_footer() {
     
