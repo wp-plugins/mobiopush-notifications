@@ -4,7 +4,7 @@
     Plugin URI: https://mobiopush.com
     Description: Plugin to improve user engagement by using push notifications.Mobiopush provides Web Notification & Push Notification services in one package allowing you to reach out to your Active and Passives users respectively. These Notifications are the new way to identify and re-enage your users.
     Author: MobioPush
-    Version: 1.0
+    Version: 1.4
     Author URI: https://mobiopush.com
     */
     
@@ -18,6 +18,8 @@
  add_action( 'post_submitbox_misc_actions', 'add_checkbox');
  add_action( 'save_post', 'mpush_post_saved');
  add_action( 'add_meta_boxes_post', 'mobio_custom_box'  );
+  add_action( 'add_meta_boxes_page', 'mobio_custom_box_page'  );
+ 
  add_action( 'admin_menu', 'mp_menu');
  add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), 'add_action_links' );
  add_action( 'admin_post_save_services_options', array($this, 'on_save_changes'));
@@ -25,7 +27,7 @@
  
  $shortname = "mobio";
 				
-				
+
 
 function add_action_links ( $links ) {
         $rlink = array(
@@ -36,7 +38,7 @@ function add_action_links ( $links ) {
 
 function mp_menu() {
 	
-	add_action( 'admin_init', 'register_mysettings' );
+	add_action( 'admin_init', 'register_mysettings_mobio' );
 	
 	
 	
@@ -52,7 +54,7 @@ function mp_menu() {
 
 
 
-function register_mysettings() {
+function register_mysettings_mobio() {
 
 
 
@@ -111,7 +113,7 @@ function baw_settings_page() {
         <tr valign="top">
         <th scope="row">Default Notification Title</th>
         <td><input type="text" name="mobio_default_title" value="<?php echo esc_attr( get_option('mobio_default_title') ); ?>"  class="regular-text"/>
-        <br><p class="description" > Leave blank if you want to use post title as notification title</span><br>
+        <br><p class="description" > If you leave blank , blog name will be used as title</span><br>
         </td>
         </tr>
          <tr valign="top">
@@ -277,11 +279,47 @@ function mobio_custom_box( $post ) {
             'high'
         );
     }
+    
+function mobio_custom_box_page( $post ) {
+
+        add_meta_box(
+            '_mobio',
+            'MobioPush advanced setttings (Optional)',
+            'mobio_custom_box_content' ,
+            'page',
+            'normal',
+            'high'
+        );
+    }    
 
 function mobio_custom_box_content( $post ) {
+
+$ch = curl_init("http://api.mobiopush.com/v1/checkStatus.php?SITE_KEY=".esc_attr( get_option('mobio_site_key')));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $location_string); 
+
+
+$content = curl_exec($ch);
+
+curl_close($ch);
+
+if($content==0) { 
+
         ?>
 
         <div id="mobio-box">
+        
+                <span id="mobio_desc" > Your notifications will not be sent as your mobiopush trial has been expired , please purchase a plan to continue</span>
+<br>
+        <a href="http://dashboard.mobiopush.com/profile/billing"> <input type="button" class="button button-primary button-large" value="purchase plan to re-activate mobiopush" style="font-size: 1.2em;height: 1.7em;width: 60%;margin:50px; background: #A80000 ;"></a> <br>
+  </div>
+  
+  
+  <?php } else { ?>    
+  
+  <div id="mobio-box">   
             <input type="text" id="mobio_title" placeholder="Enter notification title" name="mobio_title" value="" style="font-size: 1.2em;height: 1.7em;width: 100%;background-color: #fff;"/>
             
             <span id="mobio_desc" > Leave blank if title of post can be used as title of notification</span>
@@ -304,17 +342,20 @@ Web Notification time period : <select name="mobio_web_time" aria-invalid="false
         </div>
     <?php
     }
+}
  
 
     
 function mpush_post_saved( $postId ) {
 
+
+
 $mobio_title=esc_attr( get_option('mobio_default_title') );
 if(empty($mobio_title))
-$mobio_title="New Blog Post !";
+$mobio_title=get_bloginfo('name');
 $mobio_web_time_api=esc_attr( get_option('mobio_web_time') );
 if(empty($mobio_web_time_api))
-$mobio_web_time_api=10;
+$mobio_web_time_api=1400;
 else {
 
 $mobio_web_time_api=esc_attr( get_option('mobio_web_time') );
@@ -344,6 +385,19 @@ if ( ! current_user_can( 'edit_post', $postId ) )
         return;
 // Return if it's a post revision
 if ( false !== wp_is_post_revision( $postId ) )
+        return;
+        
+        if($GET['preview'])
+        return;
+        
+        if ( 'trash' == get_post_status( $postId ))
+        return;
+        
+        if ( 'draft' == get_post_status( $postId ))
+        return;
+        if ( 'auto-draft' == get_post_status( $postId ))
+        return;
+        if ( 'publish' != get_post_status( $postId ))
         return;
 
         if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || empty( $_POST['mobio_active_checkbox'] ) ) {
@@ -380,15 +434,25 @@ http_build_query(array(			'SITE_KEY' => esc_attr( get_option('mobio_site_key')),
         						)));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $server_output = curl_exec ($ch);
-echo $server_output;
             } 
             
         }
     }
     
  
-function add_checkbox() {
+function add_checkbox() { 
+$ch = curl_init("http://api.mobiopush.com/v1/checkStatus.php?SITE_KEY=".esc_attr( get_option('mobio_site_key')));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $location_string); 
 
+
+$content = curl_exec($ch);
+
+curl_close($ch);
+
+if($content==1) { 
             printf('<div class="misc-pub-section misc-pub-section-last" id="mobio_check_box">');
             
             
@@ -401,22 +465,20 @@ function add_checkbox() {
                     printf('<br><label><input type="checkbox" value="0" id="mobio_check_box" name="mobio_check_box" style="margin: -3px 9px 0 1px;"/>Send Mobiopush Notification</label><input type=hidden value="1" name="mobio_active_checkbox">' );
 
                
-               printf('</div>');
-    }
+                printf('</div>');
+
+	}
+}
     
     function mp_footer() {
     
     ?>
+<!-- start of mobio code -->
+<script src="//cdn.mobiopush.com/mobiojs/<?php echo esc_attr( get_option('mobio_site_key') ); ?>" type="text/javascript" id="_mobio_js"></script>
+<!-- end of mobio code -->    
     
-    
-    
-    
-  
-    <!-- start of mobio code --> 
 
-	<script src="//cdn.mobiopush.com/mobio.js?mobio_sitekey=<?php echo esc_attr( get_option('mobio_site_key') ); ?>" type="text/javascript" id="_mobio_js"></script>
-	
-	<!-- end of mobio code -->
+  
     
     <?php
     
